@@ -1,0 +1,183 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Internal staff member (Agent, Admin, Accountant)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "agent", "accountant"] }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Client": {
+      "title": "Client",
+      "description": "Traveler or Lead in the CRM",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "preferences": { "type": "string" },
+        "leadStatus": { "type": "string", "enum": ["new", "contacted", "qualified", "lost", "converted"] },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "email", "leadStatus"]
+    },
+    "Supplier": {
+      "title": "Supplier",
+      "description": "Service provider (Hotel, Airline, etc.)",
+      "type": "object",
+      "properties": {
+        "legalName": { "type": "string" },
+        "commercialName": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "rfc": { "type": "string" },
+        "bankAccounts": { "type": "array", "items": { "$ref": "BankAccount" } },
+        "products": { "type": "array", "items": { "$ref": "SupplierProduct" } }
+      },
+      "required": ["legalName", "commercialName", "rfc", "email"]
+    },
+    "BankAccount": {
+      "title": "BankAccount",
+      "description": "Bank account details for payments",
+      "type": "object",
+      "properties": {
+        "bankName": { "type": "string" },
+        "accountNumber": { "type": "string" },
+        "clabe": { "type": "string" },
+        "reference": { "type": "string" }
+      },
+      "required": ["bankName", "accountNumber", "clabe"]
+    },
+    "SupplierProduct": {
+      "title": "SupplierProduct",
+      "description": "Product or service offered by a supplier",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "cost": { "type": "number" },
+        "currency": { "type": "string", "enum": ["USD", "EUR", "MXN"] },
+        "validity": { "type": "string", "format": "date" }
+      },
+      "required": ["name", "type", "cost", "currency", "validity"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Base service offered in the catalog",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "supplierId": { "type": "string" },
+        "basePrice": { "type": "number" },
+        "currency": { "type": "string", "enum": ["USD", "EUR", "MXN"] }
+      },
+      "required": ["name", "supplierId", "basePrice", "currency"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Main travel reservation record",
+      "type": "object",
+      "properties": {
+        "clientId": { "type": "string" },
+        "agentId": { "type": "string" },
+        "status": { "type": "string", "enum": ["quotation", "blocked", "confirmed", "cancelled", "completed"] },
+        "totalAmount": { "type": "number" },
+        "currency": { "type": "string" },
+        "groupId": { "type": "string", "description": "Optional link to a group trip" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientId", "agentId", "status", "totalAmount", "currency"]
+    },
+    "BookingItem": {
+      "title": "BookingItem",
+      "description": "Specific service within a booking",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "supplierId": { "type": "string" },
+        "netPrice": { "type": "number", "description": "Price paid to supplier" },
+        "commission": { "type": "number", "description": "Agency profit" },
+        "status": { "type": "string" }
+      },
+      "required": ["productId", "supplierId", "netPrice", "commission"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Financial transaction (Inflow or Outflow)",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "method": { "type": "string" },
+        "type": { "type": "string", "enum": ["client_payment", "supplier_payout"] },
+        "status": { "type": "string", "enum": ["pending", "cleared", "failed"] },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["amount", "currency", "type", "status"]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "Group trip management",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contactName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "supplierId": { "type": "string" },
+        "supplierName": { "type": "string" },
+        "price": { "type": "number" },
+        "cost": { "type": "number" },
+        "serviceFee": { "type": "number" },
+        "tax": { "type": "number" },
+        "others": { "type": "number" },
+        "total": { "type": "number" },
+        "currency": { "type": "string", "enum": ["USD", "EUR", "MXN"] },
+        "exchangeRate": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "completed", "cancelled"] },
+        "clientIds": { "type": "array", "items": { "type": "string" } },
+        "targetParticipants": { "type": "number" }
+      },
+      "required": ["name", "startDate", "endDate", "price", "cost", "currency"]
+    },
+    "GroupPayment": {
+      "title": "GroupPayment",
+      "description": "Payment record for a group participant",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "clientName": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "enum": ["USD", "EUR", "MXN"] },
+        "exchangeRate": { "type": "number" },
+        "amountMXN": { "type": "number" },
+        "method": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["pending", "cleared", "failed"] }
+      },
+      "required": ["groupId", "clientId", "amount", "currency", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": "User", "description": "Staff profiles" },
+    "/clients/{clientId}": { "schema": "Client", "description": "CRM records" },
+    "/suppliers/{supplierId}": { "schema": "Supplier", "description": "Supplier directory" },
+    "/products/{productId}": { "schema": "Product", "description": "Service catalog" },
+    "/bookings/{bookingId}": { "schema": "Booking", "description": "Main reservations" },
+    "/bookings/{bookingId}/items/{itemId}": { "schema": "BookingItem", "description": "Booking sub-services" },
+    "/bookings/{bookingId}/payments/{paymentId}": { "schema": "Payment", "description": "Financial transactions" },
+    "/groups/{groupId}": { "schema": "Group", "description": "Group trip inventory" },
+    "/groupPayments/{paymentId}": { "schema": "GroupPayment", "description": "Payments for group participants" },
+    "/roles/{roleId}": { "schema": "CustomRole", "description": "Custom roles and permissions" }
+  }
+}
