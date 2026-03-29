@@ -105,23 +105,53 @@ const Sidebar = ({ onLogout }: { onLogout: () => void }) => {
   );
 };
 
-const Login = () => (
-  <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+const Login = ({ onLogin }: { onLogin: () => void }) => (
+  <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
+    {/* Decorative background elements */}
+    <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-100 rounded-full blur-3xl opacity-50" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-100 rounded-full blur-3xl opacity-50" />
+    </div>
+
     <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="max-w-md w-full bg-white p-10 rounded-3xl shadow-xl border border-slate-100 text-center space-y-8"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-md w-full bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl border border-white/20 text-center space-y-10"
     >
-      <div className="space-y-2">
-        <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-3xl mx-auto mb-6">
+      <div className="space-y-4">
+        <div className="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center text-white font-black text-4xl mx-auto mb-8 shadow-xl shadow-indigo-200 transform -rotate-3">
           T
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">TravelAgency ERP</h1>
-        <p className="text-slate-500">Iniciando sesión automáticamente...</p>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">TravelERP</h1>
+          <p className="text-slate-500 font-medium">Gestión inteligente para agencias de viajes elite.</p>
+        </div>
       </div>
       
-      <div className="flex justify-center">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      <div className="space-y-4">
+        <button 
+          onClick={onLogin}
+          className="w-full py-4.5 bg-slate-900 text-white rounded-2xl font-bold flex items-center justify-center gap-4 hover:bg-slate-800 transition-all active:scale-[0.98] shadow-xl shadow-slate-200 group"
+        >
+          <div className="bg-white p-1 rounded-lg group-hover:scale-110 transition-transform">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+          </div>
+          <span className="text-lg">Continuar con Google</span>
+        </button>
+        
+        <div className="flex items-center gap-4 py-2">
+          <div className="h-px bg-slate-100 flex-1" />
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acceso Seguro</span>
+          <div className="h-px bg-slate-100 flex-1" />
+        </div>
+      </div>
+      
+      <div className="pt-4">
+        <p className="text-xs text-slate-400 leading-relaxed">
+          Al continuar, aceptas nuestros términos de servicio y política de privacidad. 
+          Acceso restringido solo a personal autorizado.
+        </p>
       </div>
     </motion.div>
   </div>
@@ -142,7 +172,7 @@ const ProtectedRoute = ({
     </div>
   );
 
-  if (!user) return <Login />;
+  if (!user) return <Login onLogin={() => {}} />;
   
   const hasPermission = user.role === 'admin' || role?.permissions?.[moduleId]?.read;
   
@@ -157,11 +187,20 @@ function AppContent() {
   const { user, loading } = useUser();
 
   const handleLogin = async () => {
-    // No login needed for automatic login
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   const handleLogout = async () => {
-    // No logout needed for automatic login
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   if (loading) {
@@ -173,7 +212,7 @@ function AppContent() {
   }
 
   if (!user) {
-    return <Login />;
+    return <Login onLogin={handleLogin} />;
   }
 
   return (

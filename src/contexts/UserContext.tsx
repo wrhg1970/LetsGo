@@ -90,23 +90,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Automatic login: bypass Firebase Auth and set a default admin user
-    const mockFirebaseUser = {
-      uid: 'system-admin-uid',
-      email: 'wrhg1970@gmail.com',
-      displayName: 'Administrador del Sistema'
-    };
-    
-    fetchUserData(mockFirebaseUser);
-    
-    // We don't need onAuthStateChanged for automatic login
-    /*
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       fetchUserData(firebaseUser);
     });
 
     return () => unsubscribe();
-    */
   }, []);
 
   const refreshUser = async () => {
