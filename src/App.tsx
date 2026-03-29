@@ -105,7 +105,7 @@ const Sidebar = ({ onLogout }: { onLogout: () => void }) => {
   );
 };
 
-const Login = ({ onLogin }: { onLogin: () => void }) => (
+const Login = () => (
   <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -117,20 +117,12 @@ const Login = ({ onLogin }: { onLogin: () => void }) => (
           T
         </div>
         <h1 className="text-3xl font-bold text-slate-900">TravelAgency ERP</h1>
-        <p className="text-slate-500">Bienvenido al sistema de gestión boutique.</p>
+        <p className="text-slate-500">Iniciando sesión automáticamente...</p>
       </div>
       
-      <button 
-        onClick={onLogin}
-        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-800 transition-all active:scale-[0.98]"
-      >
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-        Continuar con Google
-      </button>
-      
-      <p className="text-xs text-slate-400">
-        Acceso restringido solo a personal autorizado.
-      </p>
+      <div className="flex justify-center">
+        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      </div>
     </motion.div>
   </div>
 );
@@ -150,7 +142,7 @@ const ProtectedRoute = ({
     </div>
   );
 
-  if (!user) return <Login onLogin={() => {}} />;
+  if (!user) return <Login />;
   
   const hasPermission = user.role === 'admin' || role?.permissions?.[moduleId]?.read;
   
@@ -165,20 +157,11 @@ function AppContent() {
   const { user, loading } = useUser();
 
   const handleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Login error:', error);
-    }
+    // No login needed for automatic login
   };
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    // No logout needed for automatic login
   };
 
   if (loading) {
@@ -190,7 +173,7 @@ function AppContent() {
   }
 
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return <Login />;
   }
 
   return (
